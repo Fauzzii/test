@@ -3,126 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Demo Blok Copy Paste</title>
+<title>Demo Timer & Blok Copy Paste</title>
 
 <style>
-    body{
-        font-family: Arial, sans-serif;
-        max-width:800px;
-        margin:40px auto;
-        padding:20px;
-        line-height:1.7;
-        background:#f5f5f5;
-    }
+body{
+    font-family:Arial,sans-serif;
+    max-width:800px;
+    margin:40px auto;
+    background:#f5f5f5;
+    line-height:1.7;
+}
 
-    .box{
-        background:white;
-        padding:20px;
-        border-radius:10px;
-        box-shadow:0 0 10px rgba(0,0,0,.1);
+.container{
+    background:#fff;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,.1);
+}
 
-        /* Tidak bisa diseleksi */
-        user-select:none;
-        -webkit-user-select:none;
-        -moz-user-select:none;
-        -ms-user-select:none;
-    }
+.box{
+    margin-top:20px;
+    padding:20px;
+    background:#eee;
 
-    textarea{
-        width:100%;
-        height:120px;
-        margin-top:20px;
-    }
+    user-select:none;
+    -webkit-user-select:none;
+}
 
-    .warning{
-        color:red;
-        font-weight:bold;
-        margin-top:15px;
-    }
+button{
+    padding:10px 20px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.timer{
+    font-size:32px;
+    font-weight:bold;
+    color:#d63031;
+    margin:20px 0;
+}
+
+.warning{
+    color:red;
+    font-weight:bold;
+    margin-top:15px;
+}
+
+textarea{
+    width:100%;
+    height:120px;
+    margin-top:20px;
+}
 </style>
+
 </head>
 <body>
 
-<h2>Demo Blok Copy Paste</h2>
+<div class="container">
+
+<h2>Demo Timer JavaScript</h2>
+
+<div class="timer" id="timer">
+01:00
+</div>
+
+<button id="startBtn">
+Mulai
+</button>
 
 <div class="box">
-Lorem ipsum dolor sit amet consectetur adipisicing elit.
-Coba blok teks ini.
-Klik kanan.
-Tekan Ctrl + C.
-Tekan Ctrl + A.
-Semuanya akan diblok menggunakan JavaScript.
+Silakan coba blok teks ini.
+Copy, Paste, Klik Kanan, Ctrl+C semuanya diblok menggunakan JavaScript.
 </div>
 
 <textarea placeholder="Coba paste di sini"></textarea>
 
 <div class="warning" id="msg"></div>
 
+</div>
+
 <script>
 
 function showMessage(text){
-    document.getElementById("msg").innerHTML=text;
+
+    msg.innerHTML=text;
 
     clearTimeout(window.timeout);
 
     window.timeout=setTimeout(()=>{
-        document.getElementById("msg").innerHTML="";
+        msg.innerHTML="";
     },2000);
+
 }
 
-// Blok klik kanan
-document.addEventListener("contextmenu",function(e){
-    e.preventDefault();
-    showMessage("Klik kanan dinonaktifkan");
+const timer=document.getElementById("timer");
+const msg=document.getElementById("msg");
+const startBtn=document.getElementById("startBtn");
+
+let duration=60;
+let countdown=null;
+
+startBtn.addEventListener("click",()=>{
+
+    if(countdown) return;
+
+    countdown=setInterval(()=>{
+
+        let menit=Math.floor(duration/60);
+        let detik=duration%60;
+
+        timer.innerHTML=
+            String(menit).padStart(2,"0")
+            +":"
+            +String(detik).padStart(2,"0");
+
+        duration--;
+
+        if(duration<0){
+
+            clearInterval(countdown);
+
+            timer.innerHTML="WAKTU HABIS";
+
+            alert("Waktu habis");
+
+        }
+
+    },1000);
+
 });
 
-// Blok copy
-document.addEventListener("copy",function(e){
+document.addEventListener("contextmenu",(e)=>{
+    e.preventDefault();
+    showMessage("Klik kanan diblok");
+});
+
+document.addEventListener("copy",(e)=>{
     e.preventDefault();
     showMessage("Copy diblok");
 });
 
-// Blok cut
-document.addEventListener("cut",function(e){
+document.addEventListener("cut",(e)=>{
     e.preventDefault();
     showMessage("Cut diblok");
 });
 
-// Blok paste
-document.addEventListener("paste",function(e){
+document.addEventListener("paste",(e)=>{
     e.preventDefault();
     showMessage("Paste diblok");
 });
 
-// Blok drag
-document.addEventListener("dragstart",function(e){
-    e.preventDefault();
-});
-
-// Blok shortcut keyboard
-document.addEventListener("keydown",function(e){
+document.addEventListener("keydown",(e)=>{
 
     if(e.ctrlKey){
 
-        switch(e.key.toLowerCase()){
+        const key=e.key.toLowerCase();
 
-            case "c":
-            case "v":
-            case "x":
-            case "a":
-            case "u":
-            case "s":
+        if(["a","c","v","x","u","s"].includes(key)){
 
-                e.preventDefault();
-                showMessage("Shortcut diblok");
-                break;
+            e.preventDefault();
+
+            showMessage("Shortcut diblok");
+
         }
-    }
 
-    // F12
-    if(e.key==="F12"){
-        e.preventDefault();
-        showMessage("F12 diblok");
     }
 
 });
